@@ -1,0 +1,88 @@
+- name: Deploy CoreOS work env
+  hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Install EPEL repo
+      ansible.builtin.dnf:
+        name: epel-release
+
+    - name: Pre-install some packages
+      package:
+        name: "{{ item }}"
+      with_items: "{{ base_packages }}"
+
+    - name: Set up multiple authorized keys
+      ansible.posix.authorized_key:
+        user: '{{ ansible_user }}'
+        state: present
+        key: '{{ item }}'
+      with_file:
+        - public_keys/jcapitao
+
+    - name: Create some folders
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "/home/{{ ansible_user }}/.bashrc.d"
+        - "{{ workspace_path }}"
+        - "{{ fcos_builddir }}"
+        - "{{ rhcos_builddir }}"
+        - "{{ scos_builddir }}"
+
+    - name: Create ssh folder
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0700'
+      with_items:
+        - "/home/{{ ansible_user }}/.ssh"
+
+    - name: Generate an OpenSSH keypair with a different algorithm (ed25519)
+      become_user: "{{ ansible_user }}"
+      community.crypto.openssh_keypair:
+        path: "/home/{{ ansible_user }}/.ssh/id_ed25519"
+        type: ed25519
+
+    - name: Clone the Github openshift/os project
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.git:
+        repo: "https://github.com/openshift/os"
+        dest: "{{ openshift_os_path }}"
+        accept_hostkey: true
+        clone: true
+        track_submodules: true
+        recursive: true
+      ignore_errors: yes
+
+    - name: Clone the Github fedora-coreos-config project
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.git:
+        repo: "https://github.com/coreos/fedora-coreos-config/"
+        dest: "{{ fedora_coreos_config_path }}"
+        accept_hostkey: true
+        clone: true
+        track_submodules: true
+        recursive: true
+      ignore_errors: yes
+
+    - name: Copy some conf files
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/home/{{ ansible_user }}/{{ item }}"
+      with_items:
+        - ".tmux.conf"
+        - ".bashrc.d/custom"
+
+    - name: Copy some conf files
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "/home/{{ ansible_user }}/{{ item }}"
+      with_items:
+        - ".bashrc.d/cosa"
