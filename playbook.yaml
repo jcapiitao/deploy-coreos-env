@@ -87,3 +87,18 @@
         dest: "/home/{{ ansible_user }}/{{ item }}"
       with_items:
         - ".bashrc.d/cosa"
+
+    # gh CLI is not shipped in CentOS Stream base and EPEL repos
+    - name: Clone the Github fedora-coreos-config project
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.git:
+        repo: "https://github.com/cli/cli.git"
+        dest: "{{ gh_cli_repo_path }}"
+        accept_hostkey: true
+        clone: true
+      ignore_errors: yes
+
+    - name: Run 'install' target to install the Github CLI
+      make:
+        chdir: "{{ gh_cli_repo_path }}"
+        target: install
