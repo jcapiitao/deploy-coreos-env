@@ -41,6 +41,7 @@
         state: directory
         mode: '0700'
       with_items:
+        - "/home/{{ ansible_user }}/.config/nvim/"
         - "/home/{{ ansible_user }}/.ssh"
 
     - name: Generate an OpenSSH keypair with a different algorithm (ed25519)
@@ -80,6 +81,7 @@
         dest: "/home/{{ ansible_user }}/{{ item }}"
       with_items:
         - ".bashrc.d/custom"
+        - ".config/nvim/init.vim"
         - ".gitconfig"
         - ".tmux.conf"
 
