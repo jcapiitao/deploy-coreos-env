@@ -7,6 +7,7 @@ openshift_os_path: "{{ workspace_path }}/os"
 fedora_coreos_config_path: "{{ workspace_path }}/fedora-coreos-config"
 gh_cli_repo_path: "{{ workspace_path }}/gh_cli"
 base_packages:
+  - ignition-validate
   - git
   - git-delta
   - golang
