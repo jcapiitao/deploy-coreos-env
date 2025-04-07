@@ -74,6 +74,18 @@
         force: no
       ignore_errors: yes
 
+    - name: Clone the Github coreos/coreos-assembler project
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.git:
+        repo: "https://github.com/coreos/coreos-assembler"
+        dest: "{{ coreos_assembler_path }}"
+        accept_hostkey: true
+        clone: true
+        track_submodules: false
+        recursive: true
+        force: no
+      ignore_errors: yes
+
     - name: Copy some conf files
       become_user: "{{ ansible_user }}"
       ansible.builtin.copy:
@@ -108,5 +120,12 @@
         chdir: "{{ gh_cli_repo_path }}"
         target: install
       changed_when: False
-      tags:
-        - test
+
+    - name: Build cosa
+      make:
+        chdir: "{{ coreos_assembler_path }}"
+        target: all
+      changed_when: False
+      with_items:
+        - all
+        - install

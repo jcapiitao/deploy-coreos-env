@@ -1,22 +1,22 @@
 cosar() {
     unset COSA_SCOS
     export COSA_RHCOS=y
-    cosa shell
+    cosac shell
 }
 
 cosaf() {
     unset COSA_SCOS
     unset COSA_RHCOS
-    cosa shell
+    cosac shell
 }
 
 cosas() {
     export COSA_SCOS=y
     unset COSA_RHCOS
-    cosa shell
+    cosac shell
 }
 
-cosa() {
+cosac() {
    CONTAINER_NAME=fcos
    COSA_DIR={{ fcos_builddir }}
    COREOS_ASSEMBLER_CONFIG_GIT={{ fedora_coreos_config_path }}
