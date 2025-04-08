@@ -9,6 +9,7 @@ coreos_assembler_path: "{{ workspace_path }}/coreos-assembler"
 gh_cli_repo_path: "{{ workspace_path }}/gh_cli"
 base_packages:
   - ignition-validate
+  - gh
   - git
   - git-delta
   - golang

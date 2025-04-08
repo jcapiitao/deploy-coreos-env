@@ -3,11 +3,13 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: Install EPEL repo
-      ansible.builtin.dnf:
-        name: epel-release
+    - name: Ensure libdnf5 is installed
+      ansible.builtin.shell: |
+        dnf update -y
+        dnf install -y python3-libdnf
+      changed_when: False
 
-    - name: Pre-install some packages
+    - name: Install some packages
       package:
         name: "{{ item }}"
       with_items: "{{ base_packages }}"
@@ -104,22 +106,6 @@
         dest: "/home/{{ ansible_user }}/{{ item }}"
       with_items:
         - ".bashrc.d/cosa"
-
-    # gh CLI is not shipped in CentOS Stream base and EPEL repos
-    - name: Clone the Github fedora-coreos-config project
-      become_user: "{{ ansible_user }}"
-      ansible.builtin.git:
-        repo: "https://github.com/cli/cli.git"
-        dest: "{{ gh_cli_repo_path }}"
-        accept_hostkey: true
-        clone: true
-      ignore_errors: yes
-
-    - name: Run 'install' target to install the Github CLI
-      make:
-        chdir: "{{ gh_cli_repo_path }}"
-        target: install
-      changed_when: False
 
     - name: Build cosa
       make:

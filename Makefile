@@ -15,4 +15,4 @@ bootstrap:
 
 .PHONY: ssh
 ssh:
-	@ssh -l cloud-user 10.0.78.181
+	@ssh -l fedora 10.0.79.113

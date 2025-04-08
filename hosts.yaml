@@ -5,7 +5,7 @@ all:
         coreos-1: {}
   hosts:
     coreos-1:
-      ansible_host: '10.0.78.181'
+      ansible_host: '10.0.79.113'
       ansible_port: 22
       ansible_python_interpreter: auto
-      ansible_user: cloud-user
+      ansible_user: fedora
